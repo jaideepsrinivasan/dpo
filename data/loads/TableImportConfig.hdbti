@@ -1,0 +1,65 @@
+import	= 	[ 
+    		// Product Master	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.ProductMaster";
+					file      = "DynamicPriceOptimizer.data.loads:ProductMaster.csv"; 	     
+					header    = false;		
+    			},
+     		
+     		// Pricing Master	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.PricingMaster";
+					file      = "DynamicPriceOptimizer.data.loads:PricingMaster.csv"; 	     
+					header    = false;		
+    			},
+    	   
+    	   // Event Master	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.Events";
+					file      = "DynamicPriceOptimizer.data.loads:Events.csv"; 	     
+					header    = false;		
+    			},
+    			
+    	   // Event Products	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.EventProducts";
+					file      = "DynamicPriceOptimizer.data.loads:EventProducts.csv"; 	     
+					header    = false;		
+    			},	
+    	   
+    	   // Sales History	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.SalesHistory";
+					file      = "DynamicPriceOptimizer.data.loads:SalesHistory.csv"; 	     
+					header    = false;		
+    			},						
+           
+           // Inventory	
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.Inventory";
+					file      = "DynamicPriceOptimizer.data.loads:Inventory.csv"; 	     
+					header    = false;		
+    			},
+    	  
+    	  // Color Popularity
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.ColorPopularity";
+					file      = "DynamicPriceOptimizer.data.loads:ColorPopularity.csv"; 	     
+					header    = false;		
+    			},
+    			
+    	  // Size Popularity
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.SizePopularity";
+					file      = "DynamicPriceOptimizer.data.loads:SizePopularity.csv"; 	     
+					header    = false;		
+    			},
+    				
+    	 // Brand Popularity
+    			{
+					cdstable  =	"DynamicPriceOptimizer.data::dpoMaster.BrandPopularity";
+					file      = "DynamicPriceOptimizer.data.loads:BrandPopularity.csv"; 	     
+					header    = false;		
+    			}		
+    													
+    		];	

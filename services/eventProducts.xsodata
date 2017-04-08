@@ -1,0 +1,4 @@
+service namespace "DynamicPriceOptimizer.services" {
+"DynamicPriceOptimizer.data::dpoMaster.EventProducts" as "EventProducts";
+}
+

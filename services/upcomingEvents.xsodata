@@ -1,0 +1,11 @@
+service namespace "DynamicPriceOptimizer.services" {
+"DynamicPriceOptimizer.data::dpoMaster.Events" as "UpcomingEvents" 
+ navigates ("EventProducts" as "UpcomingEventProducts");
+ 
+ "DynamicPriceOptimizer.data::dpoMaster.EventProducts" as "UpcomingEventProducts";
+ 
+  association "EventProducts" principal "UpcomingEvents"("EventID") 
+     multiplicity "1" dependent "UpcomingEventProducts"("EventID") multiplicity "*"; 
+}
+
+

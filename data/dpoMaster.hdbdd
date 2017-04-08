@@ -1,0 +1,297 @@
+namespace DynamicPriceOptimizer.data;
+
+@Schema: 'DPO'
+
+ //Logical grouping for the Master Data tables  
+context dpoMaster {
+
+        type BusinessKey : String(20);
+		type CurrencyT   : String(5);
+		type AmountT     : Decimal(15,2);
+		type QuantityT   : Decimal(13,3);
+		type UnitT       : String(3);
+		type SDate       : LocalDate;
+		type BType       : String(1);
+     	type SString     : String(15);
+ 	    type MString     : String(60);
+ 	    type LString     : String(100);
+        type LengthT     : Integer; 
+        
+//Maintain Product Attributes
+ 	@Catalog.tableType : #COLUMN
+ 	Entity ProductMaster {
+ 		key ProductID          : BusinessKey;
+ 		    ProductDesc        : LString;
+ 		    ProductCategory    : MString;
+ 		    ProductSubCategory : MString;
+ 		    Department         : SString;
+ 		    Brand              : SString;
+ 		    Style              : MString;
+ 		    Color              : MString;
+ 		    Size               : SString;
+    };
+
+//Maintain Pricing Attributes - Max Price + Discount will be a Calculated column
+ 	@Catalog.tableType : #COLUMN
+ 	Entity PricingMaster {
+ 		key Style          : MString; 
+            RetailPrice    : AmountT;
+            MSRP           : AmountT;
+            MinPrice       : AmountT;
+            PriceIncrement : AmountT;
+            Currency       : CurrencyT;    
+    };
+      
+//Maintain Event Attributes
+ 	@Catalog.tableType : #COLUMN
+ 	Entity Events {
+ 		key EventID        : BusinessKey;
+ 		    EventDesc      : MString;
+            EventType      : SString;
+            EventStartDate : SDate;
+            EventLength    : LengthT;
+    };  
+
+//Maintain Product Attributes specific to an Event - Dept. will be derived column
+ 	@Catalog.tableType : #COLUMN
+ 	Entity EventProducts {
+ 		key EventID   : BusinessKey;
+ 		Key Style     : MString;
+ 		Key ProductID : BusinessKey;
+ 		    RecommendedPrice : AmountT;
+    };
+
+//Maintain Sales History
+ 	@Catalog.tableType : #COLUMN
+ 	Entity SalesHistory {
+       key  OrderID      : BusinessKey;
+            OrderDate    : SDate;
+            Quantity     : QuantityT;
+            ItemNumber   : LengthT;
+            ProductID	 : BusinessKey;
+            SellingPrice : AmountT;
+            EventID 	 : BusinessKey;
+    }; 
+
+//Maintain Inventory Data
+ 	@Catalog.tableType : #COLUMN
+ 	Entity Inventory {
+ 	    key ProductID  : BusinessKey; 
+ 		    LocationID : BusinessKey;
+ 		    Style      : MString;
+            Quantity   : QuantityT;
+    }; 
+
+//Maintain Color Popularity - Random Dist. + cumulative dist. will be calculated column
+ 	@Catalog.tableType : #COLUMN
+ 	Entity ColorPopularity {
+ 		key ProductSubCategory : MString;
+ 		key Color              : MString;
+ 		    ColorPopularity    : Double;
+    };    
+ 
+ //Maintain Size Popularity - Random Dist. + cumulative dist. will be calculated column 
+ 	@Catalog.tableType : #COLUMN
+ 	Entity SizePopularity {
+ 		key ProductSubCategory : MString;
+ 		key Size               : SString;
+ 		    SizePopularity     : Double;
+    };    
+    		    	  
+//Maintain Brand Classification - Random Dist. will be calculated column
+ 	@Catalog.tableType : #COLUMN
+ 	Entity BrandPopularity {
+ 		key ProductSubCategory : MString;
+        key Brand              : SString;
+            BrandPopularity    : Double;
+    };  
+     
+// Views
+
+// Context for managing Snap Shot Data 
+Context SNAPSHOT {
+
+// Snapshot data of Product + Pricing Master + Inventory
+@Catalog.tableType : #COLUMN
+ 	Entity SnapShotData {
+ 	    key EventID            : BusinessKey;
+ 	    key SnapShotID         : BusinessKey;
+ 	    key ProductID          : BusinessKey;   
+ 	        EventType          : SString;
+ 	        EventStartDate     : SDate;
+ 	        EventLength        : LengthT;
+ 		    ProductDesc        : MString;
+ 		    ProductCategory    : SString;
+ 		    ProductSubCategory : SString;
+ 		    Department         : SString;
+ 		    Brand              : SString;
+ 		    Style              : MString;
+ 		    Color              : SString;
+ 		    Size               : SString;
+            RetailPrice        : AmountT;
+            MSRP               : AmountT;
+            MinPrice           : AmountT;
+            PriceIncrement     : AmountT;
+            RecommendedPrice   : AmountT;
+            Currency           : CurrencyT;  
+            ColorPopularity    : Double;
+            SizePopularity     : Double;
+            BrandPopularity    : Double;
+            Quantity           : QuantityT;
+    };  
+    
+// Snapshot data of Sales History
+@Catalog.tableType : #COLUMN
+ 	Entity SnapShotHistory {
+       key  OrderID      : BusinessKey;
+       key  SnapShotID   : BusinessKey;
+       key  EventID 	 : BusinessKey;
+       key  ItemNumber   : LengthT;
+            OrderDate    : SDate;
+            Quantity     : QuantityT; 
+            ProductID	 : BusinessKey;
+            SellingPrice : AmountT;
+        
+    };  
+
+// Snapshot data of Simulation Output
+@Catalog.tableType : #COLUMN
+ 	Entity SnapShotOutput {
+       key  EventID          : BusinessKey;
+       key  SnapShotID       : BusinessKey;
+       key  Style	         : MString;
+            RecommendedPrice : AmountT;
+          };  
+
+// Snapshot data of Simulation Output
+@Catalog.tableType : #COLUMN
+ 	Entity SnapShotParams {
+       key  SnapShotID   : BusinessKey;
+       key  EventID	     : BusinessKey;
+       key  Style        : MString;
+            SellRate     : AmountT;
+          };  
+
+}; // END of Snap Shot Context
+
+// Context for managing PAL Data model
+Context RFPAL {
+
+// table type for training input data
+   table type TTData {
+	  Department         : SString;
+	  ProductCategory    : SString;	  	  
+	  ProductSubCategory : SString;
+	  Style              : MString;
+	  Brand_Type         : BType;
+	  BrandPopularity    : Double;
+      RetailPrice        : AmountT;	  
+	  Discount           : QuantityT;
+	  ConcurrentEvents   : Integer;
+	  StylesSubCategory  : Integer;
+	  RelativePrice      : AmountT;
+	  BrandedEventsPast  : Integer;
+	  EventYear          : Integer;
+	  EventMonth         : Integer;
+	  EventDay           : Integer;
+	  EventType          : SString;
+	  EventLength        : LengthT;
+   };
+
+// table type for Paramter table  
+   table type TTParams {
+      Name       : String(100);
+      IntArgs    : Integer;
+      DoubleArgs : Double;
+      StringArgs : String(100);
+   };
+
+//table type for output tree model
+   table type TTModel {
+      ID        : Integer;
+      TreeIndex : Integer;
+      Model     : String(5000);
+   };
+
+   table type TTImportance {
+      Variable  : String(100);
+      Importance: Double;
+   };
+
+   table type TTError {
+      TreeIndex : Integer;
+      ErrorRate : Double;
+   };
+   
+   table type TTConfusion {
+      ID      : Integer;
+      Content : String(1000);
+   };
+ 
+  	@Catalog.tableType : #COLUMN  
+    entity ProcedureSignature {
+      Name       : String(100) not null;
+      intArgs    : Integer;
+      doubleArgs : Double;
+      stringArgs : String(100);
+   };
+   
+   // Training data
+   @Catalog.tableType : #COLUMN  
+   entity ParamsRFTrain {
+	  Department         : SString;
+	  ProductCategory    : SString;	  	  
+	  ProductSubCategory : SString;
+	  Style              : MString;
+	  Brand_Type         : BType;
+	  BrandPopularity    : Double;
+      RetailPrice        : AmountT;	  
+	  Discount           : QuantityT;
+	  ConcurrentEvents   : Integer;
+	  StylesSubCategory  : Integer;
+	  RelativePrice      : AmountT;
+	  BrandedEventsPast  : Integer;
+	  EventYear          : Integer;
+	  EventMonth         : Integer;
+	  EventDay           : Integer;
+	  EventType          : SString;
+	  EventLength        : LengthT;
+   };
+  
+   // Predict
+   @Catalog.tableType : #COLUMN  
+   entity ParamsRFPredict {
+      name       : String(100) not null;
+      intArgs    : Integer;
+      doubleArgs : Double;
+      stringArgs : String(100);
+   };
+   
+   @Catalog.tableType : #COLUMN  
+   entity Model {
+      ID        : Integer;
+      TreeIndex : Integer;
+      Model     : String(5000);
+   };
+   
+   @Catalog.tableType : #COLUMN
+   entity Importance {
+      Variable  : String(100);
+      Importance: Double;
+   };
+   
+   @Catalog.tableType : #COLUMN
+   entity Error {
+      TreeIndex : Integer;
+      ErrorRate : Double;
+   };
+   
+   @Catalog.tableType : #COLUMN
+   entity Confusion {
+      ID      : Integer;
+      Content : String(1000);
+   };
+   
+}; // END of PAL Context
+
+}; // END of Master Context
